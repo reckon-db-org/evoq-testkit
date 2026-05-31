@@ -1,0 +1,17 @@
+_build/
+.rebar3/
+doc/
+*.beam
+*.dump
+*.crashdump
+rebar3.crashdump
+.eunit/
+ebin/
+priv/
+deps/
+.DS_Store
+*.swp
+*~
+rebar.lock
+rebar.config.bak
+*.bak

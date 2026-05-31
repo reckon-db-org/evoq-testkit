@@ -1,0 +1,18 @@
+{application, evoq_testkit, [
+    {description, "Domain (CMD) test framework for evoq aggregates"},
+    {vsn, "0.1.0"},
+    {registered, []},
+    {applications, [
+        kernel,
+        stdlib,
+        evoq,
+        mem_evoq,
+        reckon_gater
+    ]},
+    {env, []},
+    {modules, []},
+    {licenses, ["Apache-2.0"]},
+    {links, [
+        {"Codeberg", "https://codeberg.org/reckon-db-org/evoq-testkit"}
+    ]}
+]}.
