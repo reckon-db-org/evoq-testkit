@@ -1,38 +1,15 @@
 %%% @doc Tests for evoq_aggregate_spec (Layer A — the pure CMD spec).
 %%%
-%%% Uses a tiny lamp aggregate (off -> on -> off, refuses illegal
-%%% transitions) to exercise the four assertions, both forms, and the
-%%% failure modes — the spec itself MUST fail loudly when an expectation is
-%%% violated, otherwise it gives false confidence.
+%%% Drives the `lamp_aggregate' test-support module (off -> on -> off,
+%%% rejects illegal transitions) to exercise the four assertions, both forms,
+%%% and the failure modes — the spec itself MUST fail loudly when an
+%%% expectation is violated, otherwise it gives false confidence.
 -module(evoq_aggregate_spec_tests).
 -include_lib("eunit/include/eunit.hrl").
 
-%%====================================================================
-%% Aggregate under test: a lamp. This module also implements the
-%% evoq_aggregate-shaped callbacks the pure spec uses (init/1,
-%% execute/2, apply/2). State = #{on => boolean()}.
-%%====================================================================
+-define(AGG, lamp_aggregate).
 
--define(AGG, ?MODULE).
-
-init(_AggId) -> {ok, #{on => false}}.
-
-execute(#{on := false}, #{command_type := <<"turn_on">>}) ->
-    {ok, [#{event_type => <<"lamp_turned_on">>}]};
-execute(#{on := true}, #{command_type := <<"turn_on">>}) ->
-    {error, already_on};
-execute(#{on := true}, #{command_type := <<"turn_off">>}) ->
-    {ok, [#{event_type => <<"lamp_turned_off">>}]};
-execute(#{on := false}, #{command_type := <<"turn_off">>}) ->
-    {error, already_off};
-execute(_State, #{command_type := Other}) ->
-    {error, {unknown_command, Other}}.
-
-apply(State, #{event_type := <<"lamp_turned_on">>})  -> State#{on := true};
-apply(State, #{event_type := <<"lamp_turned_off">>}) -> State#{on := false};
-apply(State, _)                                       -> State.
-
-is_on(#{on := V}) -> V.
+is_on(S) -> lamp_aggregate:is_on(S).
 
 %%====================================================================
 %% Tuple-list form
@@ -76,9 +53,8 @@ builder_happy_path_test() ->
            already_on),
     ok = evoq_aggregate_spec:done(S3).
 
-builder_emits_nothing_form_compiles_test() ->
-    %% Lamp always emits on a valid command, so just check the API exists
-    %% and that an unmatched expectation (events vs none) is caught.
+builder_emits_nothing_mismatch_is_caught_test() ->
+    %% Lamp emits on a valid command, so emits_nothing must be caught.
     ?assertError({event_mismatch, _},
         begin
             S0 = evoq_aggregate_spec:new(?AGG, <<"lamp-1">>),
@@ -128,7 +104,6 @@ bad_state_predicate_is_caught_test() ->
         ])).
 
 unasserted_command_is_caught_test() ->
-    %% exec twice without an assertion between → error.
     S0 = evoq_aggregate_spec:new(?AGG, <<"lamp-1">>),
     S1 = evoq_aggregate_spec:exec(S0, turn_on, #{}),
     ?assertError({unasserted_command, _},
