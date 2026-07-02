@@ -5,7 +5,7 @@
 %% PERSIST when dispatched for real — the half where a malformed stream id, a
 %% swallowed dispatch error, or a mis-wired adapter hides. Layer B closes that
 %% gap by replaying a command sequence through the REAL dispatch path
-%% (`evoq_dispatcher') against the in-memory `mem_evoq' adapter, then reading
+%% (`evoq_command_router') against the in-memory `mem_evoq' adapter, then reading
 %% the stream back to prove the events landed.
 %%
 %% mem-evoq is a real `evoq_event_store' adapter with no Khepri / Ra / disk,
@@ -112,7 +112,7 @@ dispatch_one(AggMod, StreamId, {CmdType, Payload}, StoreId)
     %% payload, exactly as evoq_aggregate_spec does on the pure path.
     CommandPayload = Payload#{command_type => command_type_bin(CmdType)},
     Command = evoq_command:new(CmdType, AggMod, StreamId, CommandPayload),
-    case evoq_dispatcher:dispatch(Command, #{store_id => StoreId}) of
+    case evoq_command_router:dispatch(Command, #{store_id => StoreId}) of
         {ok, _Version, _Events} -> ok;
         {error, Reason} ->
             erlang:error({dispatch_failed,

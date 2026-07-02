@@ -1,6 +1,6 @@
 {application, evoq_testkit, [
     {description, "Domain (CMD) test framework for evoq aggregates"},
-    {vsn, "0.1.0"},
+    {vsn, "0.1.1"},
     {registered, []},
     {applications, [
         kernel,

@@ -26,7 +26,7 @@ adds what was missing:
   event store and no processes — milliseconds per scenario.
 
 - **`evoq_cmd_case`** (Layer B, persistence) — replay the *same* scenario
-  through `evoq_dispatcher` against the in-memory
+  through `evoq_command_router` against the in-memory
   [mem-evoq](https://codeberg.org/reckon-db-org/mem-evoq) adapter, then read the
   stream back to prove the events persisted and (optionally) the projection
   folded them. This is the layer that catches "dispatch returned ok but nothing

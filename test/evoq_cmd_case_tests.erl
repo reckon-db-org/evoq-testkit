@@ -1,6 +1,6 @@
 %%% @doc Tests for evoq_cmd_case (Layer B — persistence via mem-evoq).
 %%%
-%%% Drive a real `lamp_aggregate' through the real `evoq_dispatcher' against
+%%% Drive a real `lamp_aggregate' through the real `evoq_command_router' against
 %%% the in-memory mem-evoq adapter, then read the stream back. These prove the
 %%% events actually PERSIST — the half Layer A cannot see.
 -module(evoq_cmd_case_tests).

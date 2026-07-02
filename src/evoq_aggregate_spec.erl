@@ -52,7 +52,7 @@
 %% straight into eunit/common_test.
 %%
 %% NOTE: the persistence half (does the command actually persist through
-%% `evoq_dispatcher' against a real store, with a valid stream id?) is Layer
+%% `evoq_command_router' against a real store, with a valid stream id?) is Layer
 %% B — see `evoq_cmd_case'. The four pure assertions here CANNOT catch a
 %% persistence/stream-id bug.
 %% @end

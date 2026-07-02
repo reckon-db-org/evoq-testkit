@@ -2,7 +2,17 @@
 
 All notable changes to **evoq-testkit** are documented here.
 
-## [Unreleased]
+## [0.1.1] - 2026-07-03
+
+### Fixed
+
+- Track evoq 1.23's module rename: dispatch through `evoq_command_router`
+  instead of the removed `evoq_dispatcher`. Under evoq >= 1.23 the Layer B
+  harness (`evoq_cmd_case`) crashed `{undef, evoq_dispatcher:dispatch/2}` on
+  every command; now green against evoq 1.23.0. Consumers on `evoq ~> 1.19`
+  that resolve to 1.23 (e.g. hecate-parksim) need this.
+
+## [0.1.0]
 
 ### Added
 

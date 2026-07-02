@@ -191,7 +191,7 @@ end).
 - runs the fun, `mem_evoq:stop_store/1` after.
 
 `dispatch_all/4` builds `evoq_command:new/5` per step, dispatches via
-`evoq_dispatcher:dispatch/2`, and **asserts each returns `{ok,_,_}`** — the
+`evoq_command_router:dispatch/2`, and **asserts each returns `{ok,_,_}`** — the
 swallow that hid 2026-05-31's bug #2 is structurally impossible here.
 `assert_stream/3` reads back via `evoq_event_store:read/5` (or
 `read_by_event_types/3`) and compares event types.
@@ -278,7 +278,7 @@ mem-evoq if approved.
 - Not a mesh/integration-fact tester. Stops at the local store + projection.
 - Not a property generator (`test/property/` stays separate; could feed it the
   scenario form later).
-- No runtime changes to `evoq_aggregate`/`evoq_dispatcher` — test support only.
+- No runtime changes to `evoq_aggregate`/`evoq_command_router` — test support only.
 
 ---
 
