@@ -1,6 +1,6 @@
 # evoq-testkit
 
-Domain (command-side) test framework for [evoq](https://codeberg.org/reckon-db-org/evoq)
+Domain (command-side) test framework for [evoq](https://github.com/reckon-db-org/evoq)
 aggregates.
 
 ## Why this exists
@@ -27,7 +27,7 @@ adds what was missing:
 
 - **`evoq_cmd_case`** (Layer B, persistence) — replay the *same* scenario
   through `evoq_command_router` against the in-memory
-  [mem-evoq](https://codeberg.org/reckon-db-org/mem-evoq) adapter, then read the
+  [mem-evoq](https://github.com/reckon-db-org/mem-evoq) adapter, then read the
   stream back to prove the events persisted and (optionally) the projection
   folded them. This is the layer that catches "dispatch returned ok but nothing
   was stored" bugs — e.g. a malformed stream id rejected at the store boundary.
