@@ -231,5 +231,8 @@ assert_event_types(Expected, Events) ->
 
 event_types(Events) -> [maps:get(event_type, E) || E <- Events].
 
-to_binary(B) when is_binary(B) -> B;
-to_binary(A) when is_atom(A)   -> atom_to_binary(A, utf8).
+%% CmdType is atom() at every call site (see the spec and the guard above),
+%% so there is no binary case to handle. The old binary clause here was
+%% unreachable and hid that: dialyzer reported its guard as one that can never
+%% succeed.
+to_binary(A) when is_atom(A) -> atom_to_binary(A, utf8).

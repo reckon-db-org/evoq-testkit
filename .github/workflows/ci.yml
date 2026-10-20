@@ -1,0 +1,85 @@
+name: ci
+
+# Compile, lint, EUnit, Common Test and Dialyzer on every push to a branch and
+# every pull request.
+#
+# THIS REPOSITORY HAD NO CI AT ALL. A test in it had never been run by a machine
+# on any change; the only gate was the author running it locally before a tag.
+#
+# On push and pull request, not dispatch-only: the failure mode being prevented
+# is "nobody remembered to run it", and a gate that only runs when someone
+# remembers preserves exactly that condition.
+#
+# `branches: ['**']` IS LOAD-BEARING. A `push` event fires for tag refs as
+# well, so without it this suite would run a second time on every release tag.
+# `**` matches every branch and excludes tags.
+#
+# Dialyzer is a plain step, not evoq's `.dialyzer_baseline` ratchet, because
+# this tree has no findings to ratchet: the two it carried were unreachable
+# binary clauses in evoq_aggregate_spec and evoq_cmd_case, and they are fixed
+# in the same change that adds this workflow. If findings ever appear here,
+# adopt the ratchet rather than letting the step go red.
+#
+# Copied from reckon-db-org/evoq's lint-and-test.yml, which is this stack's
+# standard workflow in the org.
+
+on:
+  push:
+    branches: ['**']
+    paths-ignore: ['**.md', 'proposals/**']
+  pull_request:
+    paths-ignore: ['**.md', 'proposals/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  OTP_VERSION: '28.4.3'
+  REBAR3_VERSION: '3.27.0'
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: lint + eunit + ct + dialyzer (OTP 28.4.3)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Erlang/OTP and rebar3
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          rebar3-version: ${{ env.REBAR3_VERSION }}
+          version-type: strict
+
+      # The hex cache only. A cached `_build' restores stale beams and rebar3
+      # runs test modules from the build path, so a deleted test keeps running
+      # from its stale beam. Dependency downloads are the slow part and do not
+      # have that hazard.
+      - name: Cache hex deps
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/rebar3
+          key: evoq-testkit-otp${{ env.OTP_VERSION }}-${{ hashFiles('rebar.config', 'src/*.app.src') }}
+          restore-keys: evoq-testkit-otp${{ env.OTP_VERSION }}-
+
+      - name: Compile
+        run: rebar3 compile
+
+      - name: Lint
+        run: rebar3 lint
+
+      - name: EUnit
+        run: rebar3 eunit
+
+      - name: Common Test
+        run: rebar3 ct
+
+      # Last because it is the slowest; there is no PLT to cache yet.
+      - name: Dialyzer
+        run: rebar3 dialyzer

@@ -125,8 +125,11 @@ dispatch_one(AggMod, StreamId, {CmdType, Payload}, StoreId)
 step_command({CmdType, Payload}) -> {CmdType, Payload};
 step_command({CmdType, Payload, _Expect, _Pred}) -> {CmdType, Payload}.
 
-command_type_bin(B) when is_binary(B) -> B;
-command_type_bin(A) when is_atom(A)   -> atom_to_binary(A, utf8).
+%% CmdType is atom() at every call site (see the spec and the guard above),
+%% so there is no binary case to handle. The old binary clause here was
+%% unreachable and hid that: dialyzer reported its guard as one that can never
+%% succeed.
+command_type_bin(A) when is_atom(A) -> atom_to_binary(A, utf8).
 
 %%====================================================================
 %% Read-back assertions
