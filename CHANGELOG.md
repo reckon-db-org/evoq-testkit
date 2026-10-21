@@ -2,6 +2,10 @@
 
 All notable changes to **evoq-testkit** are documented here.
 
+## [Unreleased]
+
+- CI checks every Erlang block in the README and guides (`docs.yml`, macula-codebase-checks#8), on every change including doc-only ones, and `publish-hex.yml` waits on it.
+
 ## [0.1.4] - 2026-10-20
 
 ### Fixed
